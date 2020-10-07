@@ -18,7 +18,7 @@ import gc
 
 CONTEXT_SETTINGS = dict(help_option_names = ['-h', '--help'])
 
-TRAIN_BATCH_SIZE = 4
+TRAIN_BATCH_SIZE = 8
 N_EPOCH = 10
 LOG_EVERY = 5000
 
@@ -96,12 +96,12 @@ def task():
 
 
 @task.command()
-@click.option('--src_train', default="./drive/My Drive/Mini Project/dataset/src_train.txt", help="train source file path")
-@click.option('--tgt_train', default="./drive/My Drive/Mini Project/dataset/tgt_train.txt", help="train target file path")
-@click.option('--src_valid', default="./drive/My Drive/Mini Project/dataset/src_valid.txt", help="validation source file path")
-@click.option('--tgt_valid', default="./drive/My Drive/Mini Project/dataset/tgt_valid.txt", help="validation target file path")
-@click.option('--best_model', default="./drive/My Drive/Mini Project/best_model/model.pt", help="best model file path")
-@click.option('--checkpoint_path', default="./drive/My Drive/Mini Project/checkpoint/model_ckpt.pt", help=" model check point files path")
+@click.option('--src_train', default="./dataset/src_train.txt", help="train source file path")
+@click.option('--tgt_train', default="./dataset/tgt_train.txt", help="train target file path")
+@click.option('--src_valid', default="./dataset/src_valid.txt", help="validation source file path")
+@click.option('--tgt_valid', default="./dataset/tgt_valid.txt", help="validation target file path")
+@click.option('--best_model', default="./best_model/model.pt", help="best model file path")
+@click.option('--checkpoint_path', default="./checkpoint/model_ckpt.pt", help=" model check point files path")
 @click.option('--seed', default=123, help="manual seed value (default=123)")
 def train(**kwargs):
     print("Training data module executing...")
@@ -152,9 +152,9 @@ def train(**kwargs):
     
 
 @task.command()
-@click.option('--src_test', default="./drive/My Drive/Mini Project/dataset/src_test.txt", help="test source file path")
-@click.option('--tgt_test', default="./drive/My Drive/Mini Project/dataset/tgt_test.txt", help="test target file path")
-@click.option('--best_model', default="./drive/My Drive/Mini Project/best_model/model.pt", help="best model file path")
+@click.option('--src_test', default="./dataset/src_test.txt", help="test source file path")
+@click.option('--tgt_test', default="./dataset/tgt_test.txt", help="test target file path")
+@click.option('--best_model', default="./best_model/model.pt", help="best model file path")
 def test(**kwargs):
     print("Testing Model module executing...")
 
@@ -176,11 +176,13 @@ def test(**kwargs):
     epoch_test_loss = epoch_test_loss/len_data
     print(f'avg. test loss: {epoch_test_loss:.5f} | time elapsed: {time.time() - test_start_time}')
     print("Test Complete!")
+ 
 
+#/drive/My Drive/Mini Project
 @task.command()
-@click.option('--src_file', default="./drive/My Drive/Mini Project/dataset/src_file.txt", help="test source file path")
-@click.option('--best_model', default="./drive/My Drive/Mini Project/best_model/model.pt", help="best model file path")
-@click.option('--output', default="./drive/My Drive/Mini Project/outputs/decoded.txt", help="file path to save predictions")
+@click.option('--src_file', default="./dataset/src_file.txt", help="test source file path")
+@click.option('--best_model', default="./best_model/model.pt", help="best model file path")
+@click.option('--output', default="./outputs/decoded.txt", help="file path to save predictions")
 def decode(**kwargs):
     print("Decoding sentences module executing...")
     src_test = open_file(kwargs['src_file'])
