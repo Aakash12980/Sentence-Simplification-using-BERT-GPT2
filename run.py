@@ -18,7 +18,7 @@ import gc
 
 CONTEXT_SETTINGS = dict(help_option_names = ['-h', '--help'])
 
-TRAIN_BATCH_SIZE = 8
+TRAIN_BATCH_SIZE = 4
 N_EPOCH = 10
 LOG_EVERY = 5000
 
