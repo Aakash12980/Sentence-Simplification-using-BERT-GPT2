@@ -1,4 +1,4 @@
-from transformers import BertConfig, BertTokenizer, BertModel
+from transformers import BertTokenizer
 import torch
 import pickle
 from tqdm import tqdm
