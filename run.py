@@ -20,9 +20,15 @@ logging.basicConfig(filename="./drive/My Drive/Mini Project/log_file.log", level
                 format="%(asctime)s:%(levelname)s: %(message)s")
 CONTEXT_SETTINGS = dict(help_option_names = ['-h', '--help'])
 
+<<<<<<< HEAD
 TRAIN_BATCH_SIZE = 4   
 N_EPOCH = 5
 LOG_EVERY = 11000
+=======
+TRAIN_BATCH_SIZE = 4
+N_EPOCH = 10
+LOG_EVERY = 5000
+>>>>>>> 2dab1ffebb2bc1b3d9c30e4a15d78a3b77722961
 
 config_encoder = BertConfig()
 config_decoder = BertConfig()
