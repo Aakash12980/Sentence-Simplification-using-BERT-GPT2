@@ -20,15 +20,9 @@ logging.basicConfig(filename="./drive/My Drive/Mini Project/log_file.log", level
                 format="%(asctime)s:%(levelname)s: %(message)s")
 CONTEXT_SETTINGS = dict(help_option_names = ['-h', '--help'])
 
-<<<<<<< HEAD
 TRAIN_BATCH_SIZE = 4   
 N_EPOCH = 5
 LOG_EVERY = 11000
-=======
-TRAIN_BATCH_SIZE = 4
-N_EPOCH = 10
-LOG_EVERY = 5000
->>>>>>> 2dab1ffebb2bc1b3d9c30e4a15d78a3b77722961
 
 config_encoder = BertConfig()
 config_decoder = BertConfig()
@@ -255,6 +249,7 @@ def train_model(start_epoch, eval_loss, loaders, optimizer, check_pt_path, best_
                 epoch_eval_loss = epoch_eval_loss/TRAIN_BATCH_SIZE
                 print(f'Completed Epoch: {epoch} | avg. eval loss: {epoch_eval_loss:.5f} | time elapsed: {time.time() - eval_start_time}')
                 logging.info(f'Completed Epoch: {epoch} | avg. eval loss: {epoch_eval_loss:.5f} | time elapsed: {time.time() - eval_start_time}')
+                
                 check_pt = {
                     'epoch': epoch+1,
                     'model_state_dict': model.state_dict(),
