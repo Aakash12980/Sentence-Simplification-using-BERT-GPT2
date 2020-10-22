@@ -1,69 +1,63 @@
 from transformers import BertTokenizer
-import torch
-import pickle
-from tqdm import tqdm
-from dataset import WikiDataset
-from torch.utils.data import DataLoader
+import tqdm
 
-def create_sent_tokens(src_data):
-    tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
-    src_tokens = []
-    for src in tqdm(src_data):
-        tokens = tokenizer.encode(src, return_tensors="pt", add_special_tokens=True)
-        src_tokens.append(tokens)
-    
-    return src_tokens
-
-def generate_tokens(batch):
-    #batch is a tuple
-    tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
-    src_tokens = tokenizer(batch[0], padding=True, truncation=True, return_tensors="pt")
-    tgt_tokens = tokenizer(batch[1], padding=True, truncation=True, return_tensors="pt")
-
-    return src_tokens["input_ids"], src_tokens["attention_mask"], tgt_tokens["input_ids"], tgt_tokens["attention_mask"]
-    
-def get_sent_from_tokens(data_ind):
-    tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
-    sents_list = []
-    
-    for sent in tqdm(data_ind):
-        s = tokenizer.decode(sent, skip_special_tokens=True, clean_up_tokenization_spaces=True)
-        sents_list.append(s)
-
-    return sents_list
+class Tokenizer():
+    def __init__(self, max_len=128):
+        self.max_len = max_len
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+        self.tokenizer.bos_token = self.tokenizer.cls_token
+        self.tokenizer.eos_token = self.tokenizer.sep_token
 
 
-# def get_embeddings(**kwargs):
-#     if kwargs["file_path"] is not None:
-#         embeddings = pickle.load(open(kwargs["file_path"], "rb"))
+    def encode_batch(self, batch):
+        src_tokens = self.tokenizer(batch[0], add_special_tokens=True,
+                return_token_type_ids=False, padding="longest", truncation=True,
+                return_attention_mask=True, return_tensors="pt")
+        
+        tgt_tokens = self.tokenizer(batch[0], add_special_tokens=True,
+                return_token_type_ids=False, padding="longest", truncation=True,
+                return_attention_mask=True, return_tensors="pt")
 
-#     else:
-#         model = BertModel.from_pretrained("bert-base-cased", output_hidden_states=True)
-#         device = "cuda" if torch.cuda.is_available() else "cpu"
-#         print(f"Device: {device}")
-#         model = model.to(device)
-#         model.eval()
-#         embeddings = []
-#         for tensor in tqdm(kwargs["tokens"]):
-#             tensor = tensor.to(device)
-#             with torch.no_grad():
-#                 outputs = model(tensor)
-#             embed_tensors = outputs[0]
-#             embeddings.append(embed_tensors.squeeze())
-#     return embeddings
+        labels = tgt_tokens.input_ids.clone()
+        labels[labels == self.tokenizer.pad_token_id] = -100
+        
+        return src_tokens.input_ids, src_tokens.attention_mask, tgt_tokens.input_ids, tgt_tokens.attention_mask, labels
 
-# def collate_fn(batch):
-#     data_list, label_list = [], []
-#     for _data, _label in batch:
-#         data_list.append(_data)
-#         label_list.append(_label)
-#     return data_list, label_list
+    def encode_sent(self, sents):
+        src_tokens = []
+        for s in sents:
+            tokens = self.tokenizer(s, max_length=self.max_len, add_special_tokens=True,
+                    return_token_type_ids=False, truncation=True,
+                    return_attention_mask=True, return_tensors="pt")
+            src_tokens.append([tokens.input_ids, tokens.attention_mask])
 
-# x = ["My name is Aakash", "Hello there", "Oh boy", "you"]
-# y = ["there you go", "yes!", "Okay or ok", "Nooooooo"]
-# dataset = WikiDataset(x, y)
-# dl = DataLoader(dataset, batch_size=2, collate_fn=collate_fn, shuffle=True)
-# for i, batch in enumerate(dl):
-#     print(generate_tokens(batch))  
+        return src_tokens
 
 
+    def decode_sent_tokens(self, data):
+        sents_list = []
+        for sent in data:
+            s = self.tokenizer.decode(sent, skip_special_tokens=True, clean_up_tokenization_spaces=True)
+            sents_list.append(s)
+
+        return sents_list
+
+    @staticmethod
+    def get_sent_tokens(sents):
+        tokenizer = Tokenizer()
+        ref = []
+        tokens = tokenizer.tokenizer(sents, add_special_tokens=True,
+                    return_token_type_ids=False, truncation=True, padding="longest",
+                    return_attention_mask=False, return_tensors="pt")
+            
+        for tok in tokens.input_ids.tolist():
+            ref.append([tok])
+
+        return ref
+
+
+
+# x = ["Hello there", "I am here to tell you this."]
+# tokenizer = Tokenizer(12)
+# out= tokenizer.encode_sent(x)
+# print(out)
