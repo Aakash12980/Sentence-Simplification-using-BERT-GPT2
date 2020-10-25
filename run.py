@@ -15,8 +15,8 @@ import gc
 
 TRAIN_BATCH_SIZE = 4
 N_EPOCH = 5
-max_token_len = 100
-LOG_EVERY = 20
+max_token_len = 80
+LOG_EVERY = 10000
 
 logging.basicConfig(filename="./drive/My Drive/Mini Project/log_file.log", level=logging.INFO, 
                 format="%(asctime)s:%(levelname)s: %(message)s")
@@ -47,9 +47,13 @@ def evaluate(data_loader, e_loss, model):
     with torch.no_grad():
         for step, batch in enumerate(data_loader):
             loss, logits = model(batch, device, False)
-            eval_loss += (1/(step+1)) * (loss.item() - eval_loss)
             score = compute_bleu_score(logits, batch[1])
-            bleu_score +=  (1/(step+1)) * (score - bleu_score)
+            if step == 0:
+                eval_loss = loss.item()
+                bleu_score = score
+            else:
+                eval_loss = (1/2.0)*(eval_loss + loss.item())
+                bleu_score = (1/2.0)* (bleu_score+score) 
         
     if was_training:
         model.train()
@@ -83,7 +87,6 @@ def train(**kwargs):
 
     model = EncDecModel(max_token_len)
     model.to(device)
-
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'gamma', 'beta']
     optimizer_grouped_parameters = [
@@ -95,11 +98,13 @@ def train(**kwargs):
     optimizer = torch.optim.AdamW(optimizer_grouped_parameters, lr=3e-5)
     start_epoch = 0
     eval_loss = float("inf")
+
     if os.path.exists(kwargs["checkpoint_path"]):
         optimizer, eval_loss, start_epoch = model.load_model(kwargs["checkpoint_path"], device, optimizer)
         print(f"Loading model from checkpoint with start epoch: {start_epoch} and loss: {eval_loss}")
         logging.info(f"Model loaded from saved checkpoint with start epoch: {start_epoch} and loss: {eval_loss}")
     
+
     train_model(start_epoch, eval_loss, (train_dl, valid_dl), optimizer, kwargs["checkpoint_path"], kwargs["best_model"], model)
 
 @task.command()
@@ -132,23 +137,23 @@ def test(**kwargs):
 def decode(**kwargs):
     print("Decoding sentences module executing...")
     logging.info(f"Decode module invoked.")
-    model = EncDecModel(max_token_len)
-    _, _, _ = model.load_model(kwargs["best_model"], device)
+    enc_dec_model = EncDecModel(max_token_len)
+    _, _, _ = enc_dec_model.load_model(kwargs["best_model"], device)
     print(f"Model loaded.")
-    model.to(device)
-    model.eval()
+    enc_dec_model.to(device)
+    enc_dec_model.eval()
     dataset = WikiDataset(kwargs['src_file'])
     predicted_list = []
-    sent_tensors = model.tokenizer.encode_sent(dataset.src)
+    sent_tensors = enc_dec_model.tokenizer.encode_sent(dataset.src)
     print("Decoding Sentences...")
     for sent in sent_tensors:
         with torch.no_grad():
-            # print(f"input: {sent}")
-            predicted = model.model.generate(sent[0].to(device), attention_mask=sent[1].to(device))
-            print(f'output: {predicted.squeeze()}')
+            print(f"input: {sent[0].size()}")
+            predicted = enc_dec_model.model.generate(sent[0].to(device), attention_mask=sent[1].to(device))
+            print(f'output: {predicted.squeeze().size()}')
             predicted_list.append(predicted.squeeze())
     
-    output = model.tokenizer.decode_sent_tokens(predicted_list)
+    output = enc_dec_model.tokenizer.decode_sent_tokens(predicted_list)
     with open(kwargs["output"], "w") as f:
         for sent in output:
             f.write(sent + "\n")
@@ -168,7 +173,11 @@ def train_model(start_epoch, eval_loss, loaders, optimizer, check_pt_path, best_
             optimizer.zero_grad()
             model.zero_grad()
             loss = model(batch, device)
-            epoch_train_loss += (1/(step+1))*(loss.item() - epoch_train_loss)
+            if step == 0:
+                epoch_train_loss = loss.item()
+            else:
+                epoch_train_loss = (1/2.0)*(epoch_train_loss + loss.item())
+            
             loss.backward()
             optimizer.step()
 

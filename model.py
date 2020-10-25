@@ -1,4 +1,4 @@
-from transformers import EncoderDecoderModel
+from transformers import EncoderDecoderModel, BertConfig
 from torch.nn import Module
 import torch.nn as nn
 from tokenizer import Tokenizer
@@ -6,13 +6,16 @@ import torch
 import shutil
 
 class EncDecModel(Module):
-    def __init__(self, max_len=128):
+    def __init__(self, max_len=80):
         super(EncDecModel, self).__init__()
         self.tokenizer = Tokenizer(max_len)
         self.model = EncoderDecoderModel.from_encoder_decoder_pretrained('bert-base-cased', 'bert-base-cased')
         self.model.config.decoder_start_token_id = self.tokenizer.tokenizer.bos_token_id
         self.model.config.eos_token_id = self.tokenizer.tokenizer.eos_token_id
         self.model.config.max_length = max_len
+        self.model.config.no_repeat_ngram_size = 3
+        self.model.early_stopping = True
+        self.model.length_penalty = 2.0
         self.softmax = nn.LogSoftmax(dim=-1)
 
     def forward(self, batch, device, train=True):
@@ -27,8 +30,9 @@ class EncDecModel(Module):
             return loss, torch.argmax(outputs, dim=-1)
         else:
             return loss
-    
+
     def load_model(self, checkpt_path, device, optimizer=None):
+
         if device == "cpu":
             checkpoint = torch.load(checkpt_path, map_location=torch.device("cpu"))
             self.load_state_dict(checkpoint["model_state_dict"])

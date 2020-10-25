@@ -2,7 +2,7 @@ from transformers import BertTokenizer
 import tqdm
 
 class Tokenizer():
-    def __init__(self, max_len=128):
+    def __init__(self, max_len=80):
         self.max_len = max_len
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
         self.tokenizer.bos_token = self.tokenizer.cls_token
@@ -27,7 +27,7 @@ class Tokenizer():
         src_tokens = []
         for s in sents:
             tokens = self.tokenizer(s, max_length=self.max_len, add_special_tokens=True,
-                    return_token_type_ids=False, truncation=True,
+                    return_token_type_ids=False, truncation=True, padding="max_length",
                     return_attention_mask=True, return_tensors="pt")
             src_tokens.append([tokens.input_ids, tokens.attention_mask])
 
