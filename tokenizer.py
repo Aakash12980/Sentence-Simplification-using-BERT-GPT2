@@ -20,13 +20,7 @@ class Tokenizer():
         src_tokens = self.tokenizer(batch[0], max_length = self.max_len, add_special_tokens=True,
                 return_token_type_ids=False, padding="max_length", truncation=True,
                 return_attention_mask=True, return_tensors="pt")
-        
-        # if ref:
-        #     print(batch[1])
-        #     tgt_tokens = self.gpt2_tokenizer(batch[2], max_length = self.max_len, add_special_tokens=True,
-        #         return_token_type_ids=False, padding="max_length", truncation=True,
-        #         return_attention_mask=True, return_tensors="pt")
-        # else:
+
         tgt_tokens = self.gpt2_tokenizer(batch[1], max_length = self.max_len, add_special_tokens=True,
             return_token_type_ids=False, padding="max_length", truncation=True,
             return_attention_mask=True, return_tensors="pt")

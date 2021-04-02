@@ -17,7 +17,7 @@ import shutil
 import sari
 
 TRAIN_BATCH_SIZE = 4
-N_EPOCH = 6
+N_EPOCH = 20
 max_token_len = 80
 LOG_EVERY = 10000
 
@@ -84,7 +84,7 @@ def evaluate(data_loader, e_loss):
             else:
                 eval_loss = (1/2.0)*(eval_loss + loss.item())
                 bleu_score = (1/2.0)* (bleu_score+score)
-                sari_score = (1/2.0)* (bleu_score+s_score)
+                sari_score = (1/2.0)* (sari_score+s_score)
         
     if was_training:
         model.train()
@@ -149,8 +149,7 @@ def train(**kwargs):
         'weight_decay_rate': 0.0}
     ]
     optimizer = torch.optim.AdamW(optimizer_grouped_parameters, lr=3e-5)
-    start_epoch = 0
-    eval_loss = float("inf")
+    
 
     if os.path.exists(kwargs["checkpoint_path"]):
         optimizer, eval_loss, start_epoch = load_checkpt(kwargs["checkpoint_path"], optimizer)
@@ -168,7 +167,6 @@ def train(**kwargs):
 def test(**kwargs):
     print("Testing Model module executing...")
     logging.info(f"Test module invoked.")
-    # model = EncDecModel(max_token_len)
     _, _, _ = load_checkpt(kwargs["best_model"])
     print(f"Model loaded.")
     model.eval()
@@ -177,8 +175,6 @@ def test(**kwargs):
     test_start_time = time.time()
     test_loss, bleu_score, sari_score = evaluate(test_dl, 0)
     test_loss = test_loss/TRAIN_BATCH_SIZE
-    bleu_score = bleu_score/TRAIN_BATCH_SIZE
-    sari_score = sari_score/TRAIN_BATCH_SIZE
     print(f'Avg. eval loss: {test_loss:.5f} | blue score: {bleu_score} | sari score: {sari_score} | time elapsed: {time.time() - test_start_time}')
     logging.info(f'Avg. eval loss: {test_loss:.5f} | blue score: {bleu_score} | sari score: {sari_score} | time elapsed: {time.time() - test_start_time}')
     print("Test Complete!")
@@ -198,10 +194,9 @@ def decode(**kwargs):
     sent_tensors = tokenizer.encode_sent(dataset.src)
     print("Decoding Sentences...")
     for sent in sent_tensors:
-        print(f"input: {sent[0].size()}")
-        predicted = model.generate(sent[0].to(device), attention_mask=sent[1].to(device), decoder_start_token_id=model.config.decoder.decoder_start_token_id)
-        print(f'output: {predicted.squeeze().size()}')
-        predicted_list.append(predicted.squeeze())
+        with torch.no_grad():
+            predicted = model.generate(sent[0].to(device), attention_mask=sent[1].to(device), decoder_start_token_id=model.config.decoder.decoder_start_token_id)
+            predicted_list.append(predicted.squeeze())
     
     output = tokenizer.decode_sent_tokens(predicted_list)
     with open(kwargs["output"], "w") as f:
@@ -242,7 +237,7 @@ def train_model(start_epoch, eval_loss, loaders, optimizer, check_pt_path, best_
         
         eval_start_time = time.time()
         epoch_eval_loss, bleu_score, sari_score = evaluate(loaders[1], epoch_eval_loss)
-        epoch_eval_loss = epoch_eval_loss
+        epoch_eval_loss = epoch_eval_loss/TRAIN_BATCH_SIZE
         print(f'Completed Epoch: {epoch} | avg. eval loss: {epoch_eval_loss:.5f} | blue score: {bleu_score} | Sari score: {sari_score} | time elapsed: {time.time() - eval_start_time}')
         logging.info(f'Completed Epoch: {epoch} | avg. eval loss: {epoch_eval_loss:.5f} | blue score: {bleu_score}| Sari score: {sari_score} | time elapsed: {time.time() - eval_start_time}')
 
@@ -269,7 +264,6 @@ def train_model(start_epoch, eval_loss, loaders, optimizer, check_pt_path, best_
         gc.collect()
         torch.cuda.empty_cache()  
 
-    
 
 if __name__ == "__main__":
     task()
