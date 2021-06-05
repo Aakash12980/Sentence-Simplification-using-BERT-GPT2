@@ -8,7 +8,6 @@ class Tokenizer():
         self.tokenizer.bos_token = self.tokenizer.cls_token
         self.tokenizer.eos_token = self.tokenizer.sep_token
 
-
     def encode_batch(self, batch):
         src_tokens = self.tokenizer(batch[0], add_special_tokens=True,
                 return_token_type_ids=False, padding="longest", truncation=True,
@@ -33,13 +32,13 @@ class Tokenizer():
 
         return src_tokens
 
-
-    def decode_sent_tokens(self, data):
+    @staticmethod
+    def decode_sent_tokens(data):
+        tokenizer_obj = Tokenizer()
         sents_list = []
         for sent in data:
-            s = self.tokenizer.decode(sent, skip_special_tokens=True, clean_up_tokenization_spaces=True)
+            s = tokenizer_obj.tokenizer.decode(sent, skip_special_tokens=True, clean_up_tokenization_spaces=True)
             sents_list.append(s)
-
         return sents_list
 
     @staticmethod
