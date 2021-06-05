@@ -101,7 +101,7 @@ The following major packages are used in this project:
     The project provides an end-to-end pipeline for the simplification task with supervised technique using SOTA transformer models. The model accepts normal sentences as input. The sentences are converted to token embedding using BERTTokenizer. The token embeddings are fed into the encoder-decoder model. Finally, the model outputs token embeddings for simple sentences which are then converted to sentences using GPT2Tokenizer.
 
 <p align="center">
-  <img src="./images/model architecture.jpg" alt="model architecture" width="100%" height="100%">
+  <img src="images/model architecture.png" alt="model architecture" width="75%" height="75%">
 </p>    
 
 </p>
@@ -114,7 +114,7 @@ The following major packages are used in this project:
 <p align="justify">
 The BERT-to-GPT2 model was able to achieve SARI score of 35.17 with BLEU score of 37.39. However, BERT-to-GPT-2 model was able to simplify sentences with promising results in most of the sentences. The model is mostly seen to substitute words with corrsponding simple words maintaing its context. The model is also able to simplify sentences in phrase level as well. Few of the examples of the results are shown in the table below.
 <p align="center">
-  <img src="./images/output by B2G model 1.jpg" alt="Model Outputs" width="100%" height="100%">
+  <img src="images/output by B2G model 1.png" alt="Model Outputs" width="75%" height="75%">
 </p>
 </p>
 <p align="justify">
@@ -124,7 +124,7 @@ might create a lot of confusion to the readers. Also, in the second example of t
 1982 has been missed which is crucial for keeping the exact information of the whole sentence. 
 The model failed to provide good results in some of the examples.
 <p align="center">
-  <img src="./images/output by B2G model 2.jpg" alt="Model Outputs" width="100%" height="100%">
+  <img src="images/output by B2G model 2.png" alt="Model Outputs" width="75%" height="75%">
 </p>
 
 </p>
