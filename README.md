@@ -5,7 +5,7 @@
 </br>
 
 <!-- TABLE OF CONTENTS -->
-<h2 id="table-of-contents"> :book: Table of Contents</h2>
+<h2 id="table-of-contents"> :memo: Table of Contents</h2>
 
 <details open="open">
   <summary>Table of Contents</summary>
@@ -36,7 +36,7 @@
 <hr>
 
 <!-- PREREQUISITES -->
-<h2 id="prerequisites"> :fork_and_knife: Prerequisites</h2>
+<h2 id="prerequisites"> :diamond_shape_with_a_dot_inside: Prerequisites</h2>
 
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/) <br>
 [![Made withJupyter](https://img.shields.io/badge/Made%20with-Jupyter-orange?style=for-the-badge&logo=Jupyter)](https://jupyter.org/try) <br>
@@ -53,7 +53,7 @@ The following major packages are used in this project:
 
 <!-- :paw_prints:-->
 <!-- FOLDER STRUCTURE -->
-<h2 id="folder-structure"> :cactus: Folder Structure</h2>
+<h2 id="folder-structure"> :arrow_down_small: Folder Structure</h2>
 
     Base Project Folder
     .
@@ -97,7 +97,7 @@ The following major packages are used in this project:
 <hr>
 
 <!-- Model Architecture -->
-<h2 id="dataset"> :floppy_disk: Model Architecture</h2>
+<h2 id="model-architecture"> :floppy_disk: Model Architecture</h2>
 <p> 
     The project provides an end-to-end pipeline for the simplification task with supervised technique using SOTA transformer models. The model accepts normal sentences as input. The sentences are converted to token embedding using BERTTokenizer. The token embeddings are fed into the encoder-decoder model. Finally, the model outputs token embeddings for simple sentences which are then converted to sentences using GPT2Tokenizer.
 
@@ -108,7 +108,7 @@ The following major packages are used in this project:
 </p>
 
 <!-- Code Usage -->
-<h2 id="dataset"> :floppy_disk: Code Usage</h2>
+<h2 id="code-usage"> :computer: Code Usage</h2>
 <p> 
 <p>
 To train the model: 
@@ -152,7 +152,7 @@ $ run.py decode --base_path "./" --src_file "dataset/src_file.txt" --output "dat
 <hr>
 
 <!-- RESULTS AND DISCUSSION -->
-<h2 id="results-and-discussion"> :mag: Results and Discussion</h2>
+<h2 id="results-and-discussion"> :flags: Results and Discussion</h2>
 
 <p align="justify">
 The BERT-to-GPT2 model was able to achieve SARI score of 35.17 with BLEU score of 37.39. However, BERT-to-GPT-2 model was able to simplify sentences with promising results in most of the sentences. The model is mostly seen to substitute words with corrsponding simple words maintaing its context. The model is also able to simplify sentences in phrase level as well. Few of the examples of the results are shown in the table below.
