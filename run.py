@@ -16,7 +16,7 @@ N_EPOCH = 5
 max_token_len = 80
 LOG_EVERY = 10000
 
-logging.basicConfig(filename="./drive/My Drive/Mini Project2/log_file.log", level=logging.INFO, 
+logging.basicConfig(filename="log_file.log", level=logging.INFO, 
                 format="%(asctime)s:%(levelname)s: %(message)s")
 CONTEXT_SETTINGS = dict(help_option_names = ['-h', '--help'])
 
@@ -79,18 +79,19 @@ def task():
 
 
 @task.command()
-@click.option('--src_train', default="./drive/My Drive/Mini Project2/dataset/src_train.txt", help="train source file path")
-@click.option('--tgt_train', default="./drive/My Drive/Mini Project2/dataset/tgt_train.txt", help="train target file path")
-@click.option('--src_valid', default="./drive/My Drive/Mini Project2/dataset/src_valid.txt", help="validation source file path")
-@click.option('--tgt_valid', default="./drive/My Drive/Mini Project2/dataset/tgt_valid.txt", help="validation target file path")
-@click.option('--best_model', default="./drive/My Drive/Mini Project2/best_model/model.pt", help="best model file path")
-@click.option('--ref_valid', default="./drive/My Drive/Mini Project2/dataset/ref_valid.pkl", help="validation reference file path")
-@click.option('--checkpoint_path', default="./drive/My Drive/Mini Project2/checkpoint/model_ckpt.pt", help=" model check point files path")
+@click.option("--base_path", default="./", help="Base path to the project destination")
+@click.option('--src_train', default="dataset/src_train.txt", help="train source file path")
+@click.option('--tgt_train', default="dataset/tgt_train.txt", help="train target file path")
+@click.option('--src_valid', default="dataset/src_valid.txt", help="validation source file path")
+@click.option('--tgt_valid', default="dataset/tgt_valid.txt", help="validation target file path")
+@click.option('--best_model', default="best_model/model.pt", help="best model file path")
+@click.option('--ref_valid', default="dataset/ref_valid.pkl", help="validation reference file path")
+@click.option('--checkpoint_path', default="checkpoint/model_ckpt.pt", help=" model check point files path")
 @click.option('--seed', default=123, help="manual seed value (default=123)")
 def train(**kwargs):
     print("Loading datasets...")
-    train_dataset = WikiDataset(kwargs['src_train'], kwargs['tgt_train'])
-    valid_dataset = WikiDataset(kwargs['src_valid'], kwargs['tgt_valid'], kwargs['ref_valid'], ref=True)
+    train_dataset = WikiDataset(kwargs['base_path']+kwargs['src_train'], kwargs['base_path']+kwargs['tgt_train'])
+    valid_dataset = WikiDataset(kwargs['base_path']+kwargs['src_valid'], kwargs['base_path']+kwargs['tgt_valid'], kwargs['base_path']+kwargs['ref_valid'], ref=True)
     print("Dataset loaded successfully")
 
     train_dl = DataLoader(train_dataset, batch_size=TRAIN_BATCH_SIZE, collate_fn=collate_fn, shuffle=True)
@@ -110,28 +111,29 @@ def train(**kwargs):
     start_epoch = 0
     eval_loss = float("inf")
 
-    if os.path.exists(kwargs["checkpoint_path"]):
-        optimizer, eval_loss, start_epoch = model.load_model(kwargs["checkpoint_path"], device, optimizer)
+    if os.path.exists(kwargs['base_path']+kwargs["checkpoint_path"]):
+        optimizer, eval_loss, start_epoch = model.load_model(kwargs['base_path']+kwargs["checkpoint_path"], device, optimizer)
         print(f"Loading model from checkpoint with start epoch: {start_epoch} and loss: {eval_loss}")
         logging.info(f"Model loaded from saved checkpoint with start epoch: {start_epoch} and loss: {eval_loss}")
     
 
-    train_model(start_epoch, eval_loss, (train_dl, valid_dl), optimizer, kwargs["checkpoint_path"], kwargs["best_model"], model)
+    train_model(start_epoch, eval_loss, (train_dl, valid_dl), optimizer, kwargs['base_path']+kwargs["checkpoint_path"], kwargs['base_path']+kwargs["best_model"], model)
 
 @task.command()
-@click.option('--src_test', default="./drive/My Drive/Mini Project2/dataset/src_test.txt", help="test source file path")
-@click.option('--tgt_test', default="./drive/My Drive/Mini Project2/dataset/tgt_test.txt", help="test target file path")
-@click.option('--best_model', default="./drive/My Drive/Mini Project2/best_model/model.pt", help="best model file path")
-@click.option('--ref_test', default="./drive/My Drive/Mini Project2/dataset/ref_test.pkl", help="validation reference file path")
+@click.option("--base_path", default="./", help="Base path to the project destination")
+@click.option('--src_test', default="dataset/src_test.txt", help="test source file path")
+@click.option('--tgt_test', default="dataset/tgt_test.txt", help="test target file path")
+@click.option('--best_model', default="best_model/model.pt", help="best model file path")
+@click.option('--ref_test', default="dataset/ref_test.pkl", help="validation reference file path")
 def test(**kwargs):
     print("Testing Model module executing...")
     logging.info(f"Test module invoked.")
     model = EncDecModel(max_token_len)
-    _, _, _ = model.load_model(kwargs["best_model"], device)
+    _, _, _ = model.load_model(kwargs['base_path']+kwargs["best_model"], device)
     print(f"Model loaded.")
     model.to(device)
     model.eval()
-    test_dataset = WikiDataset(kwargs['src_test'], kwargs['tgt_test'], kwargs['ref_test'], ref=True)
+    test_dataset = WikiDataset(kwargs['base_path']+kwargs['src_test'], kwargs['base_path']+kwargs['tgt_test'], kwargs['base_path']+kwargs['ref_test'], ref=True)
     test_dl = DataLoader(test_dataset, batch_size=TRAIN_BATCH_SIZE, collate_fn=collate_fn, shuffle=True)
     test_start_time = time.time()
     test_loss, sari_score, bleu_score = evaluate(test_dl, 0, model)
@@ -142,18 +144,19 @@ def test(**kwargs):
     
 
 @task.command()
-@click.option('--src_file', default="./drive/My Drive/Mini Project2/dataset/src_file.txt", help="test source file path")
-@click.option('--best_model', default="./drive/My Drive/Mini Project2/best_model/model.pt", help="best model file path")
-@click.option('--output', default="./drive/My Drive/Mini Project2/outputs/decoded.txt", help="file path to save predictions")
+@click.option("--base_path", default="./", help="Base path to the project destination")
+@click.option('--src_file', default="dataset/src_file.txt", help="test source file path")
+@click.option('--best_model', default="best_model/model.pt", help="best model file path")
+@click.option('--output', default="outputs/decoded.txt", help="file path to save predictions")
 def decode(**kwargs):
     print("Decoding sentences module executing...")
     logging.info(f"Decode module invoked.")
     enc_dec_model = EncDecModel(max_token_len)
-    _, _, _ = enc_dec_model.load_model(kwargs["best_model"], device)
+    _, _, _ = enc_dec_model.load_model(kwargs['base_path']+kwargs["best_model"], device)
     print(f"Model loaded.")
     enc_dec_model.to(device)
     enc_dec_model.eval()
-    dataset = WikiDataset(kwargs['src_file'])
+    dataset = WikiDataset(kwargs['base_path']+kwargs['src_file'])
     predicted_list = []
     sent_tensors = enc_dec_model.tokenizer.encode_sent(dataset.src)
     print("Decoding Sentences...")
@@ -163,7 +166,7 @@ def decode(**kwargs):
             predicted_list.append(predicted.squeeze())
     
     output = Tokenizer.decode_sent_tokens(predicted_list)
-    with open(kwargs["output"], "w") as f:
+    with open(kwargs['base_path']+kwargs["output"], "w") as f:
         for sent in output:
             f.write(sent + "\n")
     print("Output file saved successfully.")
