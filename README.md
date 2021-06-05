@@ -15,12 +15,13 @@
     <li><a href="#folder-structure"> ➤ Folder Structure</a></li>
     <li><a href="#dataset"> ➤ Dataset</a></li>
     <li><a href="#model-architecture"> ➤ Model Architecture</a></li>
+    <li><a href="#code-usage"> ➤ Code Usage</a></li>
     <li><a href="#results-and-discussion"> ➤ Results and Discussion</a></li>
     <li><a href="#references"> ➤ References</a></li>
   </ol>
 </details>
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+<hr>
 
 <!-- ABOUT THE PROJECT -->
 <h2 id="about-the-project"> :pencil: About The Project</h2>
@@ -32,7 +33,7 @@
     The project’s output can be useful for other NLP tasks which requires simplified sentences such as Machine Translation, Summarization, Classification, etc. The project leverages Bert model as encoder and GPT-2 model as decoder. 
 </p>
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+<hr>
 
 <!-- PREREQUISITES -->
 <h2 id="prerequisites"> :fork_and_knife: Prerequisites</h2>
@@ -42,13 +43,13 @@
 
 <!--This project is written in Python programming language. <br>-->
 The following major packages are used in this project:
-* Python v3.0+
-* Pandas v1.1.0+
-* SK-learn v0.24+
-* Pytorch v1.5+
-* Transformers(Huggingface) v3.3+
+* Python `v3.0+`
+* Pandas `v1.1.0+`
+* SK-learn `v0.24+`
+* Pytorch `v1.5+`
+* Transformers(Huggingface) `v3.3+`
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+<hr>
 
 <!-- :paw_prints:-->
 <!-- FOLDER STRUCTURE -->
@@ -83,7 +84,7 @@ The following major packages are used in this project:
     ├── tokenizer.py
  
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+<hr>
 
 <!-- DATASET -->
 <h2 id="dataset"> :floppy_disk: Dataset</h2>
@@ -93,9 +94,9 @@ The following major packages are used in this project:
 
 </p>
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+<hr>
 
-<!-- DATASET -->
+<!-- Model Architecture -->
 <h2 id="dataset"> :floppy_disk: Model Architecture</h2>
 <p> 
     The project provides an end-to-end pipeline for the simplification task with supervised technique using SOTA transformer models. The model accepts normal sentences as input. The sentences are converted to token embedding using BERTTokenizer. The token embeddings are fed into the encoder-decoder model. Finally, the model outputs token embeddings for simple sentences which are then converted to sentences using GPT2Tokenizer.
@@ -106,7 +107,49 @@ The following major packages are used in this project:
 
 </p>
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+<!-- Code Usage -->
+<h2 id="dataset"> :floppy_disk: Code Usage</h2>
+<p> 
+<p>
+To train the model: 
+</p>
+
+```sh
+$ run.py train --base_path "./" --src_train "dataset/src_train.txt" --src_valid "dataset/src_valid.txt" /
+        --tgt_train "dataset/tgt_train.txt" --tgt_valid "dataset/tgt_valid.txt" /
+        --ref_valid "dataset/ref_valid.txt" --checkpoint_path "checkpoint/model_ckpt.pt" /
+        --best_model "best_model/model.pt" --seed 540
+```
+<p>
+To test the model:
+</p>
+
+```sh
+$ run.py test --base_path "./" --src_test "dataset/src_test.txt" --tgt_test "dataset/tgt_test.txt" /
+        --ref_test "dataset/ref_test.txt" --best_model "best_model/model.pt"
+```
+
+<p>
+To decoding user inputs:
+</p>
+
+```sh
+$ run.py decode --base_path "./" --src_file "dataset/src_file.txt" --output "dataset/decoded.txt" /
+        --best_model "best_model/model.pt"
+```
+
+<p>
+`--src_file` is the path to the file which contains user's input sentences that need to be simplified. <br>
+`--output` is the path where the decoded output by the model need to be stored.<br>
+`--base_path` is the project's base path <br>
+`--best_model` is the path to the best model after training.<br>
+`--checkpoint_path` is the path to store the model checkpoint.
+</p>
+
+
+</p>
+
+<hr>
 
 <!-- RESULTS AND DISCUSSION -->
 <h2 id="results-and-discussion"> :mag: Results and Discussion</h2>
@@ -134,7 +177,7 @@ There are various reasons for the poor result for the model’s outputs. Firstly
 </p>
 
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+<hr>
 
 <!-- REFERENCES -->
 <h2 id="references"> :books: References</h2>
@@ -186,8 +229,7 @@ There are various reasons for the poor result for the model’s outputs. Firstly
   </li>
 </ul>
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
-
+<hr>
 
 <br>
 ✤ <i> This was the part of mini project for my fifth semester of Computer Science, at Deerwalk College. </a><i>
