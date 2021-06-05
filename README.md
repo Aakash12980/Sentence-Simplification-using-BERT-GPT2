@@ -14,6 +14,7 @@
     <li><a href="#prerequisites"> ➤ Prerequisites</a></li>
     <li><a href="#folder-structure"> ➤ Folder Structure</a></li>
     <li><a href="#dataset"> ➤ Dataset</a></li>
+    <li><a href="#model-architecture"> ➤ Model Architecture</a></li>
     <li><a href="#results-and-discussion"> ➤ Results and Discussion</a></li>
     <li><a href="#references"> ➤ References</a></li>
   </ol>
@@ -29,11 +30,6 @@
     the model aims to rearrange the words or substitute words or phrases to make it easier to comprehend without losing the underlying information carried by the original sentence.
     This project is an effort to find an approach to achieve good result in sentence simplification task. 
     The project’s output can be useful for other NLP tasks which requires simplified sentences such as Machine Translation, Summarization, Classification, etc. The project leverages Bert model as encoder and GPT-2 model as decoder. 
-</p>
-
-<p align="center">
-  <img src="images/WISDM Activities.png" alt="Table1: 18 Activities" width="70%" height="70%">        
-  <!--figcaption>Caption goes here</figcaption-->
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
@@ -92,21 +88,22 @@ The following major packages are used in this project:
 <!-- DATASET -->
 <h2 id="dataset"> :floppy_disk: Dataset</h2>
 <p> 
-    Wiki dataset comprising of parallel corpus of normal sentences and simple sentences is used to train the model. The original dataset consists of around 167k English sentence pairs from the Wikipedia articles. The dataset comprises of mapping of one-to-many, one-to-one and many-toone sentence pairs. But the dataset was not suitable for the training without preprocessing. Upon tokenizing the sentences, sentences having token length of more than 80 were removed keeping the maximum token length of sentences to 80. The resulting training dataset became 138k from 167k.
+    Wiki dataset comprising of parallel corpus of normal sentences and simple sentences is used to train the model. The original dataset consists of around 167k English sentence pairs from the Wikipedia articles. The dataset comprises of mapping of one-to-many, one-to-one and many-to-one sentence pairs. But the dataset was not suitable for the training without preprocessing. Upon tokenizing the sentences, sentences having token length of more than 80 were removed keeping the maximum token length of sentences to 80. The resulting training dataset became 138k from 167k.
     For the evaluation and testing purpose, TurkCorpus is used. The dataset consists of 2k manually prepared sentence pairs with 8 reference sentences and 300 sentences for testing purpose which also has 8 reference sentences.
 
-<p align="center">
-  <img src="images/Human Activity.gif" alt="Human Activity.gif" display="inline-block" width="60%" height="50%">
 </p>
 
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
- _The WISDM dataset is publicly available. Please refer to the [Link](https://archive.ics.uci.edu/ml/datasets/WISDM+Smartphone+and+Smartwatch+Activity+and+Biometrics+Dataset+)_ 
-
-  The following table shows the 18 activities represented in data set.
-</p>
+<!-- DATASET -->
+<h2 id="dataset"> :floppy_disk: Model Architecture</h2>
+<p> 
+    The project provides an end-to-end pipeline for the simplification task with supervised technique using SOTA transformer models. The model accepts normal sentences as input. The sentences are converted to token embedding using BERTTokenizer. The token embeddings are fed into the encoder-decoder model. Finally, the model outputs token embeddings for simple sentences which are then converted to sentences using GPT2Tokenizer.
 
 <p align="center">
-  <img src="images/Activity Table.png" alt="Table1: 18 Activities" width="45%" height="45%">
+  <img src="images/model architecture.png" alt="model architecture" width="75%" height="75%">
+</p>    
+
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
@@ -117,7 +114,7 @@ The following major packages are used in this project:
 <p align="justify">
 The BERT-to-GPT2 model was able to achieve SARI score of 35.17 with BLEU score of 37.39. However, BERT-to-GPT-2 model was able to simplify sentences with promising results in most of the sentences. The model is mostly seen to substitute words with corrsponding simple words maintaing its context. The model is also able to simplify sentences in phrase level as well. Few of the examples of the results are shown in the table below.
 <p align="center">
-  <img src="images/Personal and Impersonal Table.png" alt="Table 3 and 4" width="75%" height="75%">
+  <img src="images/output by B2G model 1.png" alt="Model Outputs" width="75%" height="75%">
 </p>
 </p>
 <p align="justify">
@@ -127,7 +124,7 @@ might create a lot of confusion to the readers. Also, in the second example of t
 1982 has been missed which is crucial for keeping the exact information of the whole sentence. 
 The model failed to provide good results in some of the examples.
 <p align="center">
-  <img src="images/Personal and Impersonal Table.png" alt="Table 3 and 4" width="75%" height="75%">
+  <img src="images/output by B2G model 2.png" alt="Model Outputs" width="75%" height="75%">
 </p>
 
 </p>
@@ -175,13 +172,11 @@ There are various reasons for the poor result for the model’s outputs. Firstly
   <li>
     <p>
       Xingxing Zhang and Mirella Lapata. Sentence simplification with deep reinforcement learning, 2017.
-
     </p>
   </li>
   <li>
     <p>
       Raman Chandrasekar and Bangalore Srinivas. 1997. Automatic induction of rules for text simplification. In Knowledge Based Systems.
-
     </p>
   </li>
   <li>
