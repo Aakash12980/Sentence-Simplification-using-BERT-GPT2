@@ -1,4 +1,4 @@
-from transformers import BertTokenizer
+from transformers import BertTokenizer, GPT2Tokenizer
 import tqdm
 
 class Tokenizer():
@@ -20,10 +20,10 @@ class Tokenizer():
         src_tokens = self.tokenizer(batch[0], max_length = self.max_len, add_special_tokens=True,
                 return_token_type_ids=False, padding="max_length", truncation=True,
                 return_attention_mask=True, return_tensors="pt")
-        
+
         tgt_tokens = self.gpt2_tokenizer(batch[1], max_length = self.max_len, add_special_tokens=True,
-                return_token_type_ids=False, padding="max_length", truncation=True,
-                return_attention_mask=True, return_tensors="pt")
+            return_token_type_ids=False, padding="max_length", truncation=True,
+            return_attention_mask=True, return_tensors="pt")
 
         labels = tgt_tokens.input_ids.clone()
         labels[tgt_tokens.attention_mask == 0] = -100
@@ -33,13 +33,12 @@ class Tokenizer():
     def encode_sent(self, sents):
         src_tokens = []
         for s in sents:
-            tokens = self.tokenizer(s, add_special_tokens=True,
-                    return_token_type_ids=False, max_length=self.max_len, padding="max_length", truncation=True,
+            tokens = self.tokenizer(s, max_length=self.max_len, add_special_tokens=True,
+                    return_token_type_ids=False, truncation=True, padding="max_length",
                     return_attention_mask=True, return_tensors="pt")
             src_tokens.append([tokens.input_ids, tokens.attention_mask])
 
         return src_tokens
-
 
     def decode_sent_tokens(self, data):
         sents_list = []
@@ -50,15 +49,14 @@ class Tokenizer():
         return sents_list
 
     @staticmethod
-    def get_sent_tokens(sents, max_len=80):
+    def get_sent_tokens(sents):
         tokenizer = Tokenizer()
         ref = []
         tokens = tokenizer.gpt2_tokenizer(sents, add_special_tokens=True,
-                    return_token_type_ids=False, max_length=max_len, padding="max_length", truncation=True,
+                    return_token_type_ids=False, truncation=True, padding="longest",
                     return_attention_mask=False, return_tensors="pt")
             
         for tok in tokens.input_ids.tolist():
             ref.append([tok])
 
         return ref
-
