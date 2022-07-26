@@ -117,7 +117,7 @@ To train the model:
 ```sh
 $ run.py train --base_path "./" --src_train "dataset/src_train.txt" --src_valid "dataset/src_valid.txt" /
         --tgt_train "dataset/tgt_train.txt" --tgt_valid "dataset/tgt_valid.txt" /
-        --ref_valid "dataset/ref_valid.txt" --checkpoint_path "checkpoint/model_ckpt.pt" /
+        --ref_valid "dataset/ref_valid.pkl" --checkpoint_path "checkpoint/model_ckpt.pt" /
         --best_model "best_model/model.pt" --seed 540
 ```
 <p>
@@ -126,7 +126,7 @@ To test the model:
 
 ```sh
 $ run.py test --base_path "./" --src_test "dataset/src_test.txt" --tgt_test "dataset/tgt_test.txt" /
-        --ref_test "dataset/ref_test.txt" --best_model "best_model/model.pt"
+        --ref_test "dataset/ref_test.pkl" --best_model "best_model/model.pt"
 ```
 
 <p>
